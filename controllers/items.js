@@ -3,6 +3,7 @@ const Item = require("../models/Item");
 const { StatusCodes } = require("http-status-codes");
 
 const { BadRequestError, NotFoundError } = require("../errors");
+const User = require("../models/User");
 
 ///////////////////////////////////////////////
 const getAllItems = async (req, res) => {
@@ -14,7 +15,30 @@ const getAllItems = async (req, res) => {
 };
 
 const getItem = async (req, res) => {
-    res.send("Get Item");
+    // console.log(req.user); //==>> { userId: '66becb3fa0ac5cbb54f09921', name: 'will' }
+    // console.log(req.params); // ==>> { id: '66bf9003667d3a2da0bf0925' }
+
+    // Chú ý: cái này là nested Destructuring Object
+    // ==>> userId = 66becb3fa0ac5cbb54f09921
+    // ==>> jobId = 66bf9003667d3a2da0bf0925
+    const {
+        user: { userId },
+        params: { id: itemId },
+    } = req;
+
+    // console.log(userId); // 66becb3fa0ac5cbb54f09921
+    // console.log(jobId); //  66bf9003667d3a2da0bf0925
+
+    const item = await Item.findOne({
+        _id: itemId,
+        createdBy: userId,
+    });
+
+    if (!item) {
+        throw new NotFoundError(`No item with id ${itemId}`);
+    }
+
+    res.status(StatusCodes.OK).json({ item });
 };
 
 const createItem = async (req, res) => {
@@ -31,11 +55,43 @@ const createItem = async (req, res) => {
 };
 
 const updateItem = async (req, res) => {
-    res.send("Update Item");
+    const {
+        body: { itemName, price, status },
+        user: { userId },
+        params: { id: itemId },
+    } = req;
+
+    if (itemName === "" || price === "") {
+        throw new BadRequestError("Item'name or Price can not be empty!");
+    }
+
+    const item = await Item.findByIdAndUpdate(
+        { _id: itemId, createdBy: userId }, // find
+        req.body, // update with this data
+        { new: true, runValidators: true } // run validator
+    );
+
+    res.status(StatusCodes.OK).json({ item });
 };
 
 const deleteItem = async (req, res) => {
-    res.send("Delete Item");
+    const {
+        user: { userId },
+        params: { id: itemId },
+    } = req;
+
+    const item = await Item.findByIdAndDelete({
+        _id: itemId,
+        createdBy: userId,
+    });
+
+    if (!item) {
+        throw new NotFoundError(`No item with id ${itemId}`);
+    }
+
+    res.status(StatusCodes.OK).send(
+        `Item \"${itemId}\" has successfully deleted!`
+    );
 };
 ///////////////////////////////////////////////
 module.exports = {
