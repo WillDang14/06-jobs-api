@@ -71,6 +71,10 @@ const updateItem = async (req, res) => {
         { new: true, runValidators: true } // run validator
     );
 
+    if (!item) {
+        throw new NotFoundError(`No item with id ${itemId}`);
+    }
+
     res.status(StatusCodes.OK).json({ item });
 };
 
