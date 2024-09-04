@@ -23,7 +23,34 @@ const auth = async (req, res, next) => {
 
         next();
     } catch (error) {
-        throw new UnauthenticatedError("Authentication Invalid!");
+        // console.log(error);
+
+        // Cách 1: Báo lỗi Expired token
+        // if (error instanceof jwt.TokenExpiredError) {
+        //     // console.log(jwt.TokenExpiredError);
+
+        //     // console.log(error.message);
+        //     // console.log(error.name);
+        //     // console.log(error.expiredAt);
+
+        //     throw new UnauthenticatedError("Authentication Expired!");
+        // }
+
+        // Cách 2: Báo lỗi Expired token
+        // if (error.name === "TokenExpiredError") {
+        //     console.log(error.expiredAt);
+        //     throw new UnauthenticatedError("Authentication Expired!");
+        // }
+
+        // Cách 3 ngắn gọn hơn
+        // ví dụ ở đây ==>> https://www.youtube.com/watch?v=NxANrLx59Cc
+        const msg =
+            error.name === "TokenExpiredError"
+                ? "Authentication Expired!"
+                : "Authentication Invalid!";
+
+        // throw new UnauthenticatedError("Authentication Invalid!");
+        throw new UnauthenticatedError(msg);
     }
 };
 
