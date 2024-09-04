@@ -47,9 +47,25 @@ const errorHandlerMiddleware = (err, req, res, next) => {
 
     // Cast Error ==>> báo lỗi khi ID không tìm thấy trong DB
     if (err.name === "CastError") {
-        customError.msg = `No item found with id: ${err.value}`;
+        // console.log(typeof err.value);
+        // console.log(err.value);
 
-        customError.statusCode = 404; // Not Found
+        // Cách 1
+        // if (typeof err.value === "string") {
+        //     customError.msg = `No item found with id: ${err.value}`;
+        // } else if (typeof err.value === "object") {
+        //     customError.msg = `No item found with id: ${err.value._id}`;
+        // }
+
+        // customError.msg = `No item found with id: ${err.value}`;
+
+        // Cách 2:
+        customError.msg =
+            typeof err.value === "string"
+                ? `No job found with id: ${err.value}`
+                : `No job found with id: ${err.value._id}`;
+
+        customError.statusCode = 404;
     }
     ////////////////////////////////////////////////
     // return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ err });
