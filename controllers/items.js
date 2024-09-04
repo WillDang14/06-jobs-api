@@ -62,7 +62,7 @@ const updateItem = async (req, res) => {
     } = req;
 
     if (itemName === "" || price === "") {
-        throw new BadRequestError("Item'name or Price can not be empty!");
+        throw new BadRequestError("Item name or Price can not be empty!");
     }
 
     const item = await Item.findByIdAndUpdate(
@@ -93,9 +93,14 @@ const deleteItem = async (req, res) => {
         throw new NotFoundError(`No item with id ${itemId}`);
     }
 
-    res.status(StatusCodes.OK).send(
-        `Item \"${itemId}\" has successfully deleted!`
-    );
+    // res.status(StatusCodes.OK).send(
+    //     `Item \"${itemId}\" has successfully deleted!`
+    // );
+
+    // Sửa theo bài học week12
+    res.status(StatusCodes.OK).json({
+        msg: "The entry was deleted successfully!",
+    });
 };
 ///////////////////////////////////////////////
 module.exports = {
