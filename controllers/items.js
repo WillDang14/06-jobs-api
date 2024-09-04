@@ -62,7 +62,7 @@ const updateItem = async (req, res) => {
     } = req;
 
     if (itemName === "" || price === "") {
-        throw new BadRequestError("Item'name or Price can not be empty!");
+        throw new BadRequestError("Item name or Price can not be empty!");
     }
 
     const item = await Item.findByIdAndUpdate(

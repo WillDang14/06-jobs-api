@@ -62,8 +62,8 @@ const errorHandlerMiddleware = (err, req, res, next) => {
         // Cách 2:
         customError.msg =
             typeof err.value === "string"
-                ? `No job found with id: ${err.value}`
-                : `No job found with id: ${err.value._id}`;
+                ? `No item found with id: ${err.value}`
+                : `No item found with id: ${err.value._id}`;
 
         customError.statusCode = 404;
     }
